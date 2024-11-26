@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class config {
     public static Connection connectDB() {
@@ -144,4 +146,40 @@ public class config {
             System.out.println("Error deleting record: " + e.getMessage());
         }
     }
+
+//optional method rani for individual report =)
+public void viewRecords(ResultSet rs, String[] columnHeaders, String[] columnNames) {
+    // Check that columnHeaders and columnNames arrays are the same length
+    if (columnHeaders.length != columnNames.length) {
+        System.out.println("Error: Mismatch between column headers and column names.");
+        return;
+    }
+
+    List<List<String>> records = new ArrayList<>();
+
+    try {
+        // Create a list for headers
+        List<String> headers = new ArrayList<>();
+        for (String header : columnHeaders) {
+            headers.add(header);
+        }
+        records.add(headers); // Add headers as the first row
+
+        // Collect rows into the list
+        while (rs.next()) {
+            List<String> row = new ArrayList<>();
+            for (String colName : columnNames) {
+                row.add(rs.getString(colName) != null ? rs.getString(colName) : "NULL");
+            }
+            records.add(row); // Add each row to the records
+        }
+
+        // Print the records
+        for (List<String> record : records) {
+            System.out.println(String.join("\t", record));
+        }
+    } catch (SQLException e) {
+        System.out.println("Error retrieving records: " + e.getMessage());
+    }
+}
 }
